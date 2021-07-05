@@ -11,23 +11,19 @@ const generateAccessToken = (id, email, role) => {
     }
     return jwt.sign(payload, secret, {expiresIn: "24h"});
 }
-
-const saveTokenBD = (user_id, token) => {
-    const user = TokenModel.findOne({where: {user_id: user_id}});
+async function saveTokenBD(user_id, token) {
+    const user = await TokenModel.findOne({where: {user_id: user_id.toString()}});
     if(!user) {
-        const creat = TokenModel.create({
+        return await TokenModel.create({
             user_id: user_id,
             token: token
         })
-        console.log("adas", creat)
-        return creat
     }
-    TokenModel.update({ token: token }, {
+    await TokenModel.update({ token: token }, {
         where: {
             user_id: user_id
         }
-      })
-
+    })
 }
 
 class AuthController {
@@ -37,9 +33,9 @@ class AuthController {
         if (!user) return res.status(400).json({message: `Пользователь ${email} не найден`})
         const validPassword = bcrypt.compareSync(password, user.password);
         if (!validPassword) return res.status(400).json({message: `Введен неверный пароль`})
-        const token = generateAccessToken(user.id, user.email, "user");
-        saveTokenBD(user.id, token);
-        res.json({ token })
+        const access_token = generateAccessToken(user.id, user.email, "user");
+        await saveTokenBD(user.id, access_token);
+        res.json({ access_token })
     }
     async loginAdmin(req, res) {
         const {email, password} = req.body;
@@ -47,9 +43,9 @@ class AuthController {
         if (!user) return res.status(400).json({message: `Администратор ${email} не найден`})
         const validPassword = bcrypt.compareSync(password, user.password);
         if (!validPassword) return res.status(400).json({message: `Введен неверный пароль`})
-        const token = generateAccessToken(user.id, user.email, "admin");
-        saveTokenBD(user.id, token);
-        res.json({ token })
+        const access_token = generateAccessToken(user.id, user.email, "admin");
+        await saveTokenBD(user.id, access_token);
+        res.json({ access_token })
     }
 }
 
