@@ -8,5 +8,5 @@ app.use(express.json())
 app.use('/', authRouter)
 
 app.listen(PORT, function() {
-    console.log(`Server started on post ${PORT}`);
+    console.log(`Server started on host http://localhost:${PORT}`);
 })
