@@ -4,6 +4,7 @@ const TokenModel = require('../models/token.model');
 const ReservationModel = require('../models/reservation.model');
 const WorkplaceModel = require('../models/workplace.model');
 const bcrypt = require('bcryptjs');
+const {validationResult} = require('express-validator');
 
 async function getUserId(id, role="user") {
     if (role == "user") return await UserModel.findOne({where: {id: id}});
@@ -31,6 +32,27 @@ async function createUser(email, password, firstname, lastname) {
     }
     return resUser
 }
+
+async function updateUser(id, email, password, firstname, lastname) {
+    const hashPassword = bcrypt.hashSync(password, 8);
+    const user = await UserModel.update(
+        {
+            email: email,
+            password: hashPassword,
+            firstname: firstname,
+            lastname: lastname
+        },
+        {where: {id: id}}
+    )
+    const resUser = {
+        id: user.id, 
+        email: user.email, 
+        firstname: user.firstname, 
+        lastname: user.lastname, 
+    }
+    return resUser
+}
+
 async function deleteUser(id) {
     const user = await UserModel.destroy({where: {id: id}})
     return "true"
@@ -65,6 +87,7 @@ module.exports = {
     getUserId: getUserId,
     getUserEmail: getUserEmail,
     createUser: createUser,
+    updateUser: updateUser,
     deleteUser: deleteUser,
     getUsers: getUsers,
     saveToken: saveToken,
