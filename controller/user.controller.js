@@ -11,7 +11,7 @@ class UserController {
             res.json(resUser);
         } catch(e) {
             console.log(e)
-            res.status(400).json({message: "Error Create User"})
+            res.status(400).json({error: "Error Create User"})
         }
     }
 
@@ -37,7 +37,7 @@ class UserController {
             const {id} = req.body;
             const user = await db.getUserId(id);
             if (!user) return res.status(400).json({error: "User with this ID does not exist"});
-            const resUser = await db.deleteUser(id);
+            const resUser = await db.deleteByID(id, "user");
             res.json(resUser);
         } catch(e) {
             console.log(e)
@@ -47,7 +47,7 @@ class UserController {
     
     async getUsers(req, res) {
         try {
-            const resUser = await db.getUsers();
+            const resUser = await db.getTable("users");
             res.json(resUser)
         } catch(e) {
             console.log(e);
