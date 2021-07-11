@@ -24,5 +24,7 @@ router.post('/add_workplace', validationMiddleware.createWorkplace, authMiddlewa
 router.delete('/del_workplace', validationMiddleware.checkId, authMiddleware, workplaceController.deleteWorkplace);
 router.get('/workplaces', authMiddleware, workplaceController.getWorkplace);
 
+router.get('/reservation', authMiddleware, reservationController.getReservation);
+
 
 module.exports = router;
