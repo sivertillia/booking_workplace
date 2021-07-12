@@ -17,7 +17,10 @@ const Reservation = sequelize.define("reservations", {
         allowNull: false
     },
     date: {
-        type: Sequelize.DATEONLY(),
+        type: Sequelize.DATEONLY,
+        get: function() {
+            return moment(this.getDataValue('date')).format('DD.MM.YYYY')
+        },
         allowNull: false
     },
     time_from: {

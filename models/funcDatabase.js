@@ -18,9 +18,19 @@ async function getWorkplaceId(id) {
     return await WorkplaceModel.findOne({where: {id: id}});
 }
 
+async function getReservationDate(date) {
+    console.log(date);
+    const dateTest = "12"
+    return await ReservationModel.findAll({where: 
+        {
+        date: dateTest
+        }
+    })
+}
+
 async function createUser(email, password, firstname, lastname) {
     const hashPassword = bcrypt.hashSync(password, 8);
-    const user = await UserModel.create({
+    const user = await AdminModel.create({
         email: email,
         password: hashPassword,
         firstname: firstname,
@@ -109,6 +119,7 @@ module.exports = {
     getUserId: getUserId,
     getUserEmail: getUserEmail,
     getWorkplaceId: getWorkplaceId,
+    getReservationDate: getReservationDate,
     createUser: createUser,
     updateUser: updateUser,
     deleteByID: deleteByID,
