@@ -21,11 +21,9 @@ class UserController {
             const user = await db.getUserId(id);
             const candidate = await db.getUserEmail(email);
             if (!user) return res.status(400).json({error: "User with this ID does not exist"});
-            if (candidate) {
-                if (candidate.id != user.id) return res.status(400).json({error: "User with such email already exists"});
-            }
-            const resUser = await db.updateUser(id, email, password, firstname, lastname);
-            res.json(resUser);
+            if (candidate && candidate.id != user.id) return res.status(400).json({error: "User with such email already exists"});
+            await db.updateUser(id, email, password, firstname, lastname);
+            res.status(204).json();
         } catch(e) {
             console.log(e);
             res.status(400).json({error: "Error Edit User"});

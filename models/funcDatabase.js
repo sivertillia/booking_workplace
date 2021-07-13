@@ -20,17 +20,16 @@ async function getWorkplaceId(id) {
 
 async function getReservationDate(date) {
     console.log(date);
-    const dateTest = "12"
     return await ReservationModel.findAll({where: 
         {
-        date: dateTest
+        date: date
         }
     })
 }
 
 async function createUser(email, password, firstname, lastname) {
     const hashPassword = bcrypt.hashSync(password, 8);
-    const user = await AdminModel.create({
+    const user = await UserModel.create({
         email: email,
         password: hashPassword,
         firstname: firstname,
@@ -47,7 +46,7 @@ async function createUser(email, password, firstname, lastname) {
 
 async function updateUser(id, email, password, firstname, lastname) {
     const hashPassword = bcrypt.hashSync(password, 8);
-    const user = await UserModel.update(
+    await UserModel.update(
         {
             email: email,
             password: hashPassword,
@@ -57,7 +56,7 @@ async function updateUser(id, email, password, firstname, lastname) {
             where: {id: id}
         }
     )
-    return await UserModel.findByPk(id, {attributes: {exclude: ['password']}})
+    return
 }
 
 async function deleteByID(id, why) {
