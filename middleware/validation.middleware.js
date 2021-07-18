@@ -3,6 +3,7 @@ const {body, check, validationResult} = require('express-validator')
 class ValidationMiddleware {
     async login(req, res, next) {
         try {
+            await check('email', 'The email field is required').notEmpty().run(req);
             await check('email', 'Email is incorrect').isEmail().run(req);
             await check('password', 'The password field is required').notEmpty().run(req);
             await check('password', 'Password less than 6').isLength({ min: 6 }).run(req);
@@ -18,12 +19,15 @@ class ValidationMiddleware {
     }
     async createUser(req, res, next) {
         try {
+            await check('email', 'The email field is required').notEmpty().run(req);
             await check('email', 'Email is incorrect').isEmail().run(req);
             await check('password', 'The password field is required').notEmpty().run(req);
             await check('password', 'Password less than 6').isLength({ min: 6 }).run(req);
             await check('password', 'No spaces are allowed in the password').custom(value => !/\s/.test(value)).run(req);
-            await check('firstname', 'First name not found').notEmpty().run(req);
-            await check('lastname', 'Last name not found').notEmpty().run(req);
+            await check('firstname', 'No spaces are allowed in the first name').custom(value => !/\s/.test(value)).run(req);
+            await check('lastname', 'No spaces are allowed in the last name').custom(value => !/\s/.test(value)).run(req);
+            await check('firstname', 'The First name field is required').notEmpty().run(req);
+            await check('lastname', 'The Last name field is required').notEmpty().run(req);
             const errors = validationResult(req);
             console.log({error: errors.array() })
             if (!errors.isEmpty()) return res.status(400).json({error: errors.array()[0]['msg']});
@@ -36,11 +40,14 @@ class ValidationMiddleware {
     async editUser(req, res, next) {
         try {
             await check('id', 'Id not found').notEmpty().run(req);
+            await check('email', 'The email field is required').notEmpty().run(req);
             await check('email', 'Email is incorrect').isEmail().run(req);
             await check('password', 'Password less than 6').isLength({ min: 6 }).run(req);
             await check('password', 'No spaces are allowed in the password').custom(value => !/\s/.test(value)).run(req);
-            await check('firstname', 'First name not found').notEmpty().run(req);
-            await check('lastname', 'Last name not found').notEmpty().run(req);
+            await check('firstname', 'No spaces are allowed in the first name').custom(value => !/\s/.test(value)).run(req);
+            await check('lastname', 'No spaces are allowed in the last name').custom(value => !/\s/.test(value)).run(req);
+            await check('firstname', 'The First name field is required').notEmpty().run(req);
+            await check('lastname', 'The Last name field is required').notEmpty().run(req);
             const errors = validationResult(req);
             console.log({error: errors.array() })
             if (!errors.isEmpty()) return res.status(400).json({error: errors.array()[0]['msg']});
@@ -66,8 +73,8 @@ class ValidationMiddleware {
     async createWorkplace(req, res, next) {
         try {
             await check('place_name', 'Place name not found').notEmpty().run(req);
-            await check('x', 'PositionX not found').notEmpty().run(req);
-            await check('y', 'PositionY not found').notEmpty().run(req);
+            await check('x', 'The X field is required').notEmpty().run(req);
+            await check('y', 'The Y field is required').notEmpty().run(req);
             const errors = validationResult(req);
             console.log({error: errors.array() })
             if (!errors.isEmpty()) return res.status(400).json({error: errors.array()[0]['msg']});
