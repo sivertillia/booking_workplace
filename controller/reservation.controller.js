@@ -13,6 +13,19 @@ class ReservationController {
             res.status(400).json({error: "Error Get Reservation"});
         }
     }
+    async getReservation(req, res) {
+        try {
+            const {id} = req.user;
+            console.log(`User id: ${id}`);
+            const user = await db.getUserId(id);
+            if (!user) return res.status(400).json({error: "User with this ID does not exist"});
+            const resReservation = await db.getReservation(id);
+            res.json(resReservation);
+        } catch(e) {
+            console.log(e);
+            res.status(400).json({error: "Error Get Reservation"});
+        }
+    }
 }
 
 module.exports = new ReservationController()

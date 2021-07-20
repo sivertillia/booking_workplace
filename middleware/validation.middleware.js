@@ -1,13 +1,56 @@
-const {body, check, validationResult} = require('express-validator')
+const {body, check, validationResult, checkSchema} = require('express-validator')
+
+const checkPassword = async (req) => {
+    await checkSchema({
+        password: {
+            notEmpty: {errorMessage: 'The password field is required'},
+            isLength: {
+                options: { min: 6 },
+                errorMessage: 'Password less than 6'
+            },
+            custom: {
+                options: (value => !/\s/.test(value)),
+                errorMessage: 'No spaces are allowed in the password'
+            }
+        }
+    }).run(req)
+}
+
+const checkEmail = async (req) => {
+    await checkSchema({
+        email: {
+            notEmpty: {errorMessage: 'The email field is required'},
+            isEmail: {errorMessage: 'Email is incorrect'}
+        }
+    }).run(req)
+}
+
+const checkFullname = async (req) => {
+    await checkSchema({
+        firstname: {
+            notEmpty: {errorMessage: 'The First name field is required'},
+            custom: {options: (value => !/\s/.test(value)), errorMessage: 'Not spaces are allowed in the first name'}
+        },
+        lastname: {
+            notEmpty: {errorMessage: 'The Last name field is required'},
+            custom: {options: (value => !/\s/.test(value)), errorMessage: 'No spaces are allowed in the last name'}
+        }
+    }).run(req)
+}
+
+const checkId = async (req) => {
+    await checkSchema({
+        id: {
+            notEmpty: {errorMessage: 'The id is required'}
+        }
+    }).run(req)
+}
 
 class ValidationMiddleware {
     async login(req, res, next) {
         try {
-            await check('email', 'The email field is required').notEmpty().run(req);
-            await check('email', 'Email is incorrect').isEmail().run(req);
-            await check('password', 'The password field is required').notEmpty().run(req);
-            await check('password', 'Password less than 6').isLength({ min: 6 }).run(req);
-            await check('password', 'No spaces are allowed in the password').custom(value => !/\s/.test(value)).run(req);
+            await checkEmail(req);
+            await checkPassword(req);
             const errors = validationResult(req);
             console.log({error: errors.array() })
             if (!errors.isEmpty()) return res.status(400).json({error: errors.array()[0]['msg']});
@@ -19,15 +62,9 @@ class ValidationMiddleware {
     }
     async createUser(req, res, next) {
         try {
-            await check('email', 'The email field is required').notEmpty().run(req);
-            await check('email', 'Email is incorrect').isEmail().run(req);
-            await check('password', 'The password field is required').notEmpty().run(req);
-            await check('password', 'Password less than 6').isLength({ min: 6 }).run(req);
-            await check('password', 'No spaces are allowed in the password').custom(value => !/\s/.test(value)).run(req);
-            await check('firstname', 'No spaces are allowed in the first name').custom(value => !/\s/.test(value)).run(req);
-            await check('lastname', 'No spaces are allowed in the last name').custom(value => !/\s/.test(value)).run(req);
-            await check('firstname', 'The First name field is required').notEmpty().run(req);
-            await check('lastname', 'The Last name field is required').notEmpty().run(req);
+            await checkEmail(req);
+            await checkPassword(req);
+            await checkFullname(req);
             const errors = validationResult(req);
             console.log({error: errors.array() })
             if (!errors.isEmpty()) return res.status(400).json({error: errors.array()[0]['msg']});
@@ -39,15 +76,10 @@ class ValidationMiddleware {
     }
     async editUser(req, res, next) {
         try {
-            await check('id', 'Id not found').notEmpty().run(req);
-            await check('email', 'The email field is required').notEmpty().run(req);
-            await check('email', 'Email is incorrect').isEmail().run(req);
-            await check('password', 'Password less than 6').isLength({ min: 6 }).run(req);
-            await check('password', 'No spaces are allowed in the password').custom(value => !/\s/.test(value)).run(req);
-            await check('firstname', 'No spaces are allowed in the first name').custom(value => !/\s/.test(value)).run(req);
-            await check('lastname', 'No spaces are allowed in the last name').custom(value => !/\s/.test(value)).run(req);
-            await check('firstname', 'The First name field is required').notEmpty().run(req);
-            await check('lastname', 'The Last name field is required').notEmpty().run(req);
+            await checkId(req);
+            await checkEmail(req)
+            await checkPassword(req);
+            await checkFullname(req);
             const errors = validationResult(req);
             console.log({error: errors.array() })
             if (!errors.isEmpty()) return res.status(400).json({error: errors.array()[0]['msg']});
@@ -59,7 +91,7 @@ class ValidationMiddleware {
     }
     async checkId(req, res, next) {
         try {
-            await check('id', 'Id not found').notEmpty().run(req);
+            await checkId(req);
             const errors = validationResult(req);
             console.log({error: errors.array() })
             if (!errors.isEmpty()) return res.status(400).json({error: errors.array()[0]['msg']});
@@ -72,7 +104,12 @@ class ValidationMiddleware {
 
     async createWorkplace(req, res, next) {
         try {
-            await check('place_name', 'Place name not found').notEmpty().run(req);
+            await checkSchema({
+                place_name: {
+                    notEmpty:{errorMessage: 'The Place name field is required'},
+                    custom: {options: (value => !/\s/.test(value)), errorMessage: 'No spaces are allowed in the place name'}
+                }
+            }).run(req);
             await check('x', 'The X field is required').notEmpty().run(req);
             await check('y', 'The Y field is required').notEmpty().run(req);
             const errors = validationResult(req);

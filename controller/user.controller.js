@@ -52,6 +52,14 @@ class UserController {
             res.status(400).json({error: "Error Get Users"});
         }
     }
+
+    // QA
+    async getUser(req, res) {
+        const {uid} = req.params;
+        const user = await db.getUserId(uid)
+        if (!user) return res.status(400).json({error: "User with this ID does not exist"});
+        res.status(200).json(user)
+    }
 }
 
 module.exports = new UserController()
