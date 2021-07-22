@@ -114,17 +114,9 @@ async function createWorkplace(place_name, x, y) {
     return resUser
 }
 
-async function getReservation(id) {
-    const reservation = await ReservationModel.findAll({where: {user_id: id}})
-    const resReservation = {
-        id: reservation.id,
-        id: reservation.place_id,
-        id: reservation.user_id,
-        id: reservation.date,
-        id: reservation.time_from,
-        id: reservation.time_to,
-    }
-    return resReservation
+async function getReservation(user_id) {
+    console.log(user_id);
+    return await ReservationModel.findAll({where: {user_id: user_id}})
 }
 
 module.exports = {

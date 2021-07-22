@@ -19,7 +19,7 @@ class ReservationController {
             console.log(`User id: ${id}`);
             const user = await db.getUserId(id);
             if (!user) return res.status(400).json({error: "User with this ID does not exist"});
-            const resReservation = await db.getReservation(id);
+            const resReservation = await db.getReservation(id.toString());
             res.json(resReservation);
         } catch(e) {
             console.log(e);
